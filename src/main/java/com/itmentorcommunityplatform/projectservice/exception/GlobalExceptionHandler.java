@@ -12,6 +12,8 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
+
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -39,9 +41,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getFieldError() != null
-                ? ex.getBindingResult().getFieldError().getDefaultMessage()
-                : "Invalid request body";
+        List<String> fieldErrors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .toList();
+        String errorMessage = String.join("; ", fieldErrors);
         log.warn("Validation failed: {}", errorMessage);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -53,7 +58,7 @@ public class GlobalExceptionHandler {
         log.warn("JSON parse error: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("Invalid request body (including unknown roadmap project type)"));
+                .body(new ErrorResponse("Invalid request body"));
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)

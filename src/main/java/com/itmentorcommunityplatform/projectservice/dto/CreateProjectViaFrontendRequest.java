@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.URL;
 
-public record CreateProjectRequest(
+public record CreateProjectViaFrontendRequest(
         @NotBlank(message = "GitHub repository URL cannot be empty")
         @URL(
                 protocol = "https",
@@ -22,6 +22,12 @@ public record CreateProjectRequest(
 
         @NotNull(message = "Roadmap project cannot be empty")
         @JsonProperty("roadmap_project")
-        RoadmapProject roadmapProject
+        RoadmapProject roadmapProject,
+
+        @JsonProperty("added_timestamp")
+        Long addedTimestamp,
+
+        @JsonProperty("project_source_type")
+        String projectSourceType
 ) {
 }
