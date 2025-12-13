@@ -8,7 +8,11 @@ import org.hibernate.validator.constraints.URL;
 
 public record CreateProjectRequest(
         @NotBlank(message = "GitHub repository URL cannot be empty")
-        @URL(message = "Invalid URL format")
+        @URL(
+                protocol = "https",
+                host = "github.com",
+                message = "URL must be a valid GitHub https URL"
+        )
         @JsonProperty("github_repository_url")
         String githubRepositoryUrl,
 

@@ -2,6 +2,7 @@
 POST http://localhost:8084/api/projects/project
 Content-Type: application/json
 X-Telegram-User-Id: 123456789
+X-Telegram-Username: llllqqqqqqqqq
 X-User-Roles: STUDENT
 
 {
@@ -14,6 +15,7 @@ X-User-Roles: STUDENT
 POST http://localhost:8084/api/projects/project
 Content-Type: application/json
 X-Telegram-User-Id: 123456789
+X-Telegram-Username: llllqqqqqqqqq
 
 {
   "github_repository_url": "not-a-url",
@@ -25,6 +27,7 @@ X-Telegram-User-Id: 123456789
 POST http://localhost:8084/api/projects/project
 Content-Type: application/json
 X-Telegram-User-Id: 123456789
+X-Telegram-Username: llllqqqqqqqqq
 
 {
   "github_repository_url": "https://github.com/zhukovsd/simulation-test-2",
@@ -35,6 +38,17 @@ X-Telegram-User-Id: 123456789
 ### Ошибка 400: Отсутствует заголовок X-Telegram-User-Id
 POST http://localhost:8084/api/projects/project
 Content-Type: application/json
+
+{
+  "github_repository_url": "https://github.com/zhukovsd/simulation-test-3",
+  "programming_language": "Java",
+  "roadmap_project": "SIMULATION"
+}
+
+### Ошибка 400: Отсутствует заголовок X-Telegram-Username
+POST http://localhost:8084/api/projects/project
+Content-Type: application/json
+X-Telegram-User-Id: 123456789
 
 {
   "github_repository_url": "https://github.com/zhukovsd/simulation-test-3",

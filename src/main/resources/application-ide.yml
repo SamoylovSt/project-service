@@ -14,3 +14,7 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:29092
+
+kafka:
+  topic:
+    projects-project-created: projects.project.created
