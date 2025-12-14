@@ -8,6 +8,8 @@ Content-Type: application/json
   "github_repository_url": "https://github.com/zhukovsd/hangman",
   "programming_language": "Java",
   "roadmap_project": "HANGMAN",
+  "telegram_user_id": 124551251,
+  "telegram_username": "zhukovsd",
   "project_source_type": "TELEGRAM_BOT"
 }
 
@@ -20,6 +22,8 @@ Content-Type: application/json
   "github_repository_url": "https://github.com/zhukovsd/hangman",
   "programming_language": "Java",
   "roadmap_project": "HANGMAN",
+  "telegram_user_id": 124551251,
+  "telegram_username": "zhukovsd",
   "added_timestamp": 1765628000,
   "project_source_type": "DATA_IMPORTER"
 }
@@ -34,6 +38,8 @@ Content-Type: application/json
   "github_repository_url": "not-a-url",
   "programming_language": "Java",
   "roadmap_project": "SIMULATION",
+  "telegram_user_id": 124551251,
+  "telegram_username": "zhukovsd",
   "project_source_type": "TELEGRAM_BOT"
 }
 
@@ -45,6 +51,8 @@ Content-Type: application/json
   "github_repository_url": "https://github.com/zhukovsd/simulation-test-3",
   "programming_language": "Java",
   "roadmap_project": "SIMULATION",
+  "telegram_user_id": 124551251,
+  "telegram_username": "zhukovsd",
   "project_source_type": "TELEGRAM_BOT"
 }
 
@@ -57,6 +65,8 @@ Content-Type: application/json
   "github_repository_url": "https://github.com/zhukovsd/hangman",
   "programming_language": "Java",
   "roadmap_project": "HANGMAN",
+  "telegram_user_id": 124551251,
+  "telegram_username": "zhukovsd",
   "project_source_type": "INVALID_TYPE"
 }
 
@@ -69,5 +79,7 @@ Content-Type: application/json
   "github_repository_url": "https://github.com/zhukovsd/unknown-project",
   "programming_language": "Java",
   "roadmap_project": "UNKNOWN-PROJECT",
+  "telegram_user_id": 124551251,
+  "telegram_username": "zhukovsd",
   "project_source_type": "TELEGRAM_BOT"
 }

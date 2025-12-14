@@ -4,12 +4,12 @@ import com.itmentorcommunityplatform.projectservice.dto.CreateProjectViaFrontend
 import com.itmentorcommunityplatform.projectservice.dto.CreateProjectViaTelegramBotOrImportRequest;
 import com.itmentorcommunityplatform.projectservice.dto.ProjectResponse;
 import com.itmentorcommunityplatform.projectservice.kafka.ProjectEventProducer;
-import com.itmentorcommunityplatform.projectservice.mapper.ProjectCommandMapper;
 import com.itmentorcommunityplatform.projectservice.mapper.ProjectMapper;
 import com.itmentorcommunityplatform.projectservice.model.DataSourceType;
 import com.itmentorcommunityplatform.projectservice.model.Project;
 import com.itmentorcommunityplatform.projectservice.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,64 +17,57 @@ import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ProjectEventProducer projectEventProducer;
     private final ProjectMapper projectMapper;
-    private final ProjectCommandMapper projectCommandMapper;
-
 
 
     @Transactional
-    public ProjectResponse createProjectViaFrontend(Long authorId, String username, CreateProjectViaFrontendRequest request) {
-        CreateProjectCommand cmd = projectCommandMapper.fromFrontend(request, authorId);
-        Project savedProject = createProject(cmd);
+    public ProjectResponse createProjectViaFrontend(
+            Long authorId,
+            String username,
+            CreateProjectViaFrontendRequest request
+    ) {
+        long timestamp = Instant.now().getEpochSecond();
+
+        log.info("Creating project via FRONTEND. authorId={}, username={}, timestamp={}",
+                authorId, username, timestamp);
+
+        Project project = projectMapper.toEntity(request, authorId, timestamp);
+        projectRepository.save(project);
+
+        log.info("Project created via FRONTEND. projectId={}", project.getId());
 
         String telegramProfileUrl = buildTelegramProfileUrl(username);
-        projectEventProducer.sendProjectCreated
-                (projectMapper.toEvent(savedProject, telegramProfileUrl, DataSourceType.FRONTEND)
-                );
-        ProjectResponse response = projectMapper.toResponse(savedProject);
-        return response;
+        projectEventProducer.sendProjectCreated(
+                projectMapper.toEvent(project, telegramProfileUrl, DataSourceType.FRONTEND)
+        );
+
+        return projectMapper.toResponse(project);
     }
 
     @Transactional
     public ProjectResponse createProjectViaTelegramBotOrImporter(
-            CreateProjectViaTelegramBotOrImportRequest request) {
-        CreateProjectCommand cmd = projectCommandMapper.fromTelegramOrImporter(request);
+            CreateProjectViaTelegramBotOrImportRequest request
+    ) {
+        long addedTimestamp = request.dataSourceType() == DataSourceType.DATA_IMPORTER
+                ? request.addedTimestamp()
+                : Instant.now().getEpochSecond();
 
-        Project project = createProject(cmd);
+        Project project = projectMapper.toEntity(request, addedTimestamp);
+        projectRepository.save(project);
+        log.info("Project saved via {}. projectId={}",
+                request.dataSourceType(), project.getId());
 
-        ProjectResponse response = projectMapper.toResponse(project);
-        return response;
-    }
-
-
-    private Project createProject(CreateProjectCommand cmd) {
-
-        long addedTimestamp = resolveAddedTimestamp(cmd);
-
-        Project project = new Project(
-                null,
-                cmd.authorTelegramUserId(),
-                cmd.githubRepositoryUrl(),
-                cmd.programmingLanguage(),
-                cmd.roadmapProject(),
-                addedTimestamp
+        String telegramProfileUrl = buildTelegramProfileUrl(request.telegramUsername());
+        projectEventProducer.sendProjectCreated(
+                projectMapper.toEvent(project, telegramProfileUrl, request.dataSourceType())
         );
-
-        return projectRepository.save(project);
+        return projectMapper.toResponse(project);
     }
-
-    private long resolveAddedTimestamp(CreateProjectCommand cmd) {
-        if (cmd.dataSourceType() == DataSourceType.DATA_IMPORTER
-            && cmd.addedTimestamp() != null) {
-            return cmd.addedTimestamp();
-        }
-        return Instant.now().getEpochSecond();
-    }
-
 
     private String buildTelegramProfileUrl(String username) {
         return "https://t.me/" + username;

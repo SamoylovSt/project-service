@@ -1,5 +1,7 @@
 package com.itmentorcommunityplatform.projectservice.mapper;
 
+import com.itmentorcommunityplatform.projectservice.dto.CreateProjectViaFrontendRequest;
+import com.itmentorcommunityplatform.projectservice.dto.CreateProjectViaTelegramBotOrImportRequest;
 import com.itmentorcommunityplatform.projectservice.dto.ProjectResponse;
 import com.itmentorcommunityplatform.projectservice.kafka.ProjectCreatedEvent;
 import com.itmentorcommunityplatform.projectservice.model.DataSourceType;
@@ -15,4 +17,12 @@ public interface ProjectMapper {
     ProjectCreatedEvent toEvent(Project project, String telegramProfileUrl, DataSourceType sourceType);
 
     ProjectResponse toResponse(Project project);
+
+    @Mapping(target = "addedTimestamp", source = "addedTimestamp")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "authorTelegramUserId", source = "authorTelegramUserId")
+    Project toEntity(CreateProjectViaFrontendRequest frontendDto, Long authorTelegramUserId, Long addedTimestamp);
+
+    @Mapping(target = "addedTimestamp", source = "addedTimestamp")
+    Project toEntity(CreateProjectViaTelegramBotOrImportRequest telegramBotOrImportRequestDto, Long addedTimestamp);
 }
