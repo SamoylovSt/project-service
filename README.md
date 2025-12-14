@@ -15,7 +15,6 @@
 - [Системная аналитика - учёт проектов](https://github.com/it-mentor-community-platform/meta/blob/main/system-analytics/functionality/projects-bookkeeping.md)
 
 ### Сборка Docker-образа
-
-    ```bash
-    docker build -t project-service:local-stack .
-    ```
+```bash
+ docker build -t project-service:local-stack .
+```
