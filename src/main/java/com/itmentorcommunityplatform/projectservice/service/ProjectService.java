@@ -8,6 +8,7 @@ import com.itmentorcommunityplatform.projectservice.mapper.ProjectMapper;
 import com.itmentorcommunityplatform.projectservice.model.DataSourceType;
 import com.itmentorcommunityplatform.projectservice.model.Project;
 import com.itmentorcommunityplatform.projectservice.repository.ProjectRepository;
+import io.micrometer.core.instrument.Counter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,10 @@ public class ProjectService {
     private final ProjectEventProducer projectEventProducer;
     private final ProjectMapper projectMapper;
 
+    private final Counter projectsCreatedViaFrontendCounter;
+    private final Counter projectsCreatedViaTelegramBotCounter;
+    private final Counter projectsCreatedViaImporterCounter;
+
 
     @Transactional
     public ProjectResponse createProjectViaFrontend(
@@ -38,8 +43,9 @@ public class ProjectService {
 
         Project project = projectMapper.toEntity(request, authorId, timestamp);
         projectRepository.save(project);
-
         log.info("Project created via FRONTEND. projectId={}", project.getId());
+
+        projectsCreatedViaFrontendCounter.increment();
 
         String telegramProfileUrl = buildTelegramProfileUrl(username);
         projectEventProducer.sendProjectCreated(
@@ -62,11 +68,20 @@ public class ProjectService {
         log.info("Project saved via {}. projectId={}",
                 request.dataSourceType(), project.getId());
 
+        incrementProjectMetric(request.dataSourceType());
+
         String telegramProfileUrl = buildTelegramProfileUrl(request.telegramUsername());
         projectEventProducer.sendProjectCreated(
                 projectMapper.toEvent(project, telegramProfileUrl, request.dataSourceType())
         );
         return projectMapper.toResponse(project);
+    }
+
+    private void incrementProjectMetric(DataSourceType sourceType) {
+        switch (sourceType) {
+            case TELEGRAM_BOT -> projectsCreatedViaTelegramBotCounter.increment();
+            case DATA_IMPORTER -> projectsCreatedViaImporterCounter.increment();
+        }
     }
 
     private String buildTelegramProfileUrl(String username) {
