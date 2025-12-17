@@ -1,5 +1,7 @@
 package com.itmentorcommunityplatform.projectservice.controller;
 
+import com.itmentorcommunityplatform.projectservice.docs.project.CreateProjectViaFrontendDocs;
+import com.itmentorcommunityplatform.projectservice.docs.project.CreateProjectViaTelegramBotOrImporterDocs;
 import com.itmentorcommunityplatform.projectservice.dto.CreateProjectViaFrontendRequest;
 import com.itmentorcommunityplatform.projectservice.dto.CreateProjectViaTelegramBotOrImportRequest;
 import com.itmentorcommunityplatform.projectservice.dto.ProjectResponse;
@@ -8,11 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -23,6 +21,7 @@ public class ProjectController {
 
 
     @PostMapping("/project")
+    @CreateProjectViaFrontendDocs
     public ResponseEntity<ProjectResponse> createProjectViaFrontend(
             @RequestHeader("X-Telegram-User-Id") Long telegramUserId,
             @RequestHeader("X-Telegram-Username") String username,
@@ -33,6 +32,7 @@ public class ProjectController {
     }
 
     @PostMapping("/internal/project")
+    @CreateProjectViaTelegramBotOrImporterDocs
     public ResponseEntity<ProjectResponse> createProjectViaTelegramBotOrImporter(
             @Valid @RequestBody CreateProjectViaTelegramBotOrImportRequest request
     ) {

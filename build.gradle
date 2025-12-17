@@ -43,6 +43,8 @@ dependencies {
     // Metrics
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
+    // OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
 
     // Tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
