@@ -15,24 +15,30 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+@Target(value = ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
-        summary = "Create project via frontend",
+        summary = "Create project via Telegram bot or Data Importer",
         description = """
-                Creates a new project on behalf of a Telegram user based on data
-                sent from the frontend.
+                Processes an internal request to create a project from a Telegram bot
+                or a data import service.
                 
-                Headers:
-                - `X-Telegram-User-Id` — Telegram user ID
-                - `X-Telegram-Username` — Telegram username
+                Depending on the `project_source_type` value:
+                - `TELEGRAM_BOT` — the project is created by a Telegram bot.
+                - `DATA_IMPORTER` — the project is created during data import from an external source.
                 
-                Request Body:
+                Request body fields:
+                - `author_telegram_user_id` — Telegram ID of the project author
                 - `github_repository_url` — GitHub repository URL
                 - `programming_language` — project programming language
-                - `roadmap_project` — project identifier in the roadmap (available options:
-                        HANGMAN, SIMULATION, CURRENCY-EXCHANGE, TENNIS-SCOREBOARD, WEATHER-VIEWER,
-                        CLOUD-FILE-STORAGE, TASK-TRACKER, OTHER )
+                - `roadmap_project` — project identifier in the roadmap
+                  (available options: HANGMAN, SIMULATION, CURRENCY-EXCHANGE, TENNIS-SCOREBOARD,
+                  WEATHER-VIEWER, CLOUD-FILE-STORAGE, TASK-TRACKER, OTHER)
+                - `telegram_user_id` — ID of the Telegram user the project is linked to
+                - `telegram_username` — Telegram username
+                - `added_timestamp` — project addition time (used only for DATA_IMPORTER;
+                  ignored and overwritten with current time for TELEGRAM_BOT source)
+                - `project_source_type` — project source (`TELEGRAM_BOT` or `DATA_IMPORTER`)
                 """,
         requestBody = @RequestBody(
                 required = true,
@@ -40,11 +46,31 @@ import java.lang.annotation.Target;
                         mediaType = "application/json",
                         examples = {
                                 @ExampleObject(
+                                        name = "Creation via Telegram bot",
                                         value = """
                                                 {
-                                                  "github_repository_url": "https://github.com/zhukovsd/currency-exchange-test",
+                                                  "author_telegram_user_id": 123,
+                                                  "github_repository_url": "https://github.com/zhukovsd/hangman",
                                                   "programming_language": "Java",
-                                                  "roadmap_project": "CURRENCY-EXCHANGE"
+                                                  "roadmap_project": "HANGMAN",
+                                                  "telegram_user_id": 124551251,
+                                                  "telegram_username": "zhukovsd",
+                                                  "project_source_type": "TELEGRAM_BOT"
+                                                }
+                                                """
+                                ),
+                                @ExampleObject(
+                                        name = "Creation via Data Importer",
+                                        value = """
+                                                {
+                                                  "author_telegram_user_id": 123,
+                                                  "github_repository_url": "https://github.com/zhukovsd/hangman",
+                                                  "programming_language": "Java",
+                                                  "roadmap_project": "HANGMAN",
+                                                  "telegram_user_id": 124551251,
+                                                  "telegram_username": "zhukovsd",
+                                                  "added_timestamp": 1765628000,
+                                                  "project_source_type": "DATA_IMPORTER"
                                                 }
                                                 """
                                 )
@@ -52,23 +78,26 @@ import java.lang.annotation.Target;
                 )
         )
 )
+
 @ApiResponses(value = {
         @ApiResponse(
-                responseCode = "200",
+                responseCode = "201",
                 description = "Project successfully created",
                 content = @Content(
                         mediaType = "application/json",
                         schema = @Schema(implementation = Project.class),
-                        examples = @ExampleObject(value = """
-                                {
-                                  "id": 1,
-                                  "author_telegram_user_id": 123456789,
-                                  "github_repository_url": "https://github.com/zhukovsd/currency-exchange-test",
-                                  "programming_language": "Java",
-                                  "roadmap_project": "CURRENCY-EXCHANGE",
-                                  "added_timestamp": 1765897706
-                                }
-                                """)
+                        examples = @ExampleObject(
+                                value = """
+                                        {
+                                          "id": 1,
+                                          "author_telegram_user_id": 123,
+                                          "github_repository_url": "https://github.com/zhukovsd/hangman",
+                                          "programming_language": "Java",
+                                          "roadmap_project": "HANGMAN",
+                                          "added_timestamp": 1765897706
+                                        }
+                                        """
+                        )
                 )
         ),
         @ApiResponse(
@@ -80,7 +109,7 @@ import java.lang.annotation.Target;
                         examples = @ExampleObject(
                                 value = """
                                         {
-                                        "message": "The project at this repository link already exists"
+                                          "message": "The project at this repository link already exists"
                                         }
                                         """
                         )
@@ -102,26 +131,26 @@ import java.lang.annotation.Target;
                                                 """
                                 ),
                                 @ExampleObject(
-                                        name = "Empty required field programming_language",
+                                        name = "Empty required field",
                                         value = """
                                                 {
-                                                  "message": "Field 'programming_language' must not be empty"
+                                                  "message": "Required field must not be empty"
                                                 }
                                                 """
                                 ),
                                 @ExampleObject(
-                                        name = "Missing X-Telegram-User-Id header",
+                                        name = "Missing author_telegram_user_id",
                                         value = """
                                                 {
-                                                  "message": "Missing required header: X-Telegram-User-Id"
+                                                  "message": "Missing required field: author_telegram_user_id"
                                                 }
                                                 """
                                 ),
                                 @ExampleObject(
-                                        name = "Missing X-Telegram-Username header",
+                                        name = "Invalid project_source_type",
                                         value = """
                                                 {
-                                                  "message": "Missing required header: X-Telegram-Username"
+                                                  "message": "Invalid project_source_type value"
                                                 }
                                                 """
                                 ),
@@ -137,5 +166,5 @@ import java.lang.annotation.Target;
                 )
         )
 })
-public @interface CreateProjectViaFrontendDocs {
+public @interface CreateProjectViaTelegramBotOrImporterDocs {
 }

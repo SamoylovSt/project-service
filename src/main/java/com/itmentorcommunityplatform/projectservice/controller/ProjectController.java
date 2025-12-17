@@ -1,6 +1,7 @@
 package com.itmentorcommunityplatform.projectservice.controller;
 
 import com.itmentorcommunityplatform.projectservice.docs.project.CreateProjectViaFrontendDocs;
+import com.itmentorcommunityplatform.projectservice.docs.project.CreateProjectViaTelegramBotOrImporterDocs;
 import com.itmentorcommunityplatform.projectservice.dto.CreateProjectViaFrontendRequest;
 import com.itmentorcommunityplatform.projectservice.dto.CreateProjectViaTelegramBotOrImportRequest;
 import com.itmentorcommunityplatform.projectservice.dto.ProjectResponse;
@@ -31,6 +32,7 @@ public class ProjectController {
     }
 
     @PostMapping("/internal/project")
+    @CreateProjectViaTelegramBotOrImporterDocs
     public ResponseEntity<ProjectResponse> createProjectViaTelegramBotOrImporter(
             @Valid @RequestBody CreateProjectViaTelegramBotOrImportRequest request
     ) {
