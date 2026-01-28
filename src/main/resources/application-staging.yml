@@ -1,0 +1,17 @@
+spring:
+  config:
+    activate:
+      on-profile: staging
+
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  kafka:
+    bootstrap-servers: kafka:9092
+
+kafka:
+  topic:
+    projects-project-created: projects.project.created
