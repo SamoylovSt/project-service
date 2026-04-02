@@ -59,7 +59,9 @@ public class ProjectService {
     public ProjectResponse createProjectViaTelegramBotOrImporter(
             CreateProjectViaTelegramBotOrImportRequest request
     ) {
+        Long requestedTimestamp = request.addedTimestamp();
         long addedTimestamp = request.dataSourceType() == DataSourceType.DATA_IMPORTER
+                && requestedTimestamp != null
                 ? request.addedTimestamp()
                 : Instant.now().getEpochSecond();
 
