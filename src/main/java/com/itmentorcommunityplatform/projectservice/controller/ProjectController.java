@@ -24,7 +24,7 @@ public class ProjectController {
     @CreateProjectViaFrontendDocs
     public ResponseEntity<ProjectResponse> createProjectViaFrontend(
             @RequestHeader("X-Telegram-User-Id") Long telegramUserId,
-            @RequestHeader("X-Telegram-Username") String username,
+            @RequestHeader(value = "X-Telegram-Username", required = false) String username,
             @Valid @RequestBody CreateProjectViaFrontendRequest request
     ) {
         ProjectResponse response = projectService.createProjectViaFrontend(telegramUserId, username, request);
