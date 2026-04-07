@@ -3,6 +3,7 @@ package com.itmentorcommunityplatform.projectservice.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.itmentorcommunityplatform.projectservice.model.DataSourceType;
 import com.itmentorcommunityplatform.projectservice.model.RoadmapProject;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.URL;
@@ -29,7 +30,7 @@ public record CreateProjectViaTelegramBotOrImportRequest(
         @JsonProperty("roadmap_project")
         RoadmapProject roadmapProject,
 
-        @NotBlank
+        @Nullable
         @JsonProperty("author_telegram_username")
         String telegramUsername,
 

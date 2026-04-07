@@ -70,7 +70,32 @@ import java.lang.annotation.Target;
                                                   "project_source_type": "DATA_IMPORTER"
                                                 }
                                                 """
-                                )
+                                ),
+                                @ExampleObject(
+                                        name = "Creation via Telegram bot without field author_telegram_username",
+                                        value = """
+                                                {
+                                                  "author_telegram_user_id": 123,
+                                                  "github_repository_url": "https://github.com/zhukovsd/hangman",
+                                                  "programming_language": "Java",
+                                                  "roadmap_project": "HANGMAN",
+                                                  "project_source_type": "TELEGRAM_BOT"
+                                                }
+                                                """
+                                ),
+                                @ExampleObject(
+                                        name = "Creation via Data Importer without field author_telegram_username",
+                                        value = """
+                                                {
+                                                  "author_telegram_user_id": 123,
+                                                  "github_repository_url": "https://github.com/zhukovsd/hangman",
+                                                  "programming_language": "Java",
+                                                  "roadmap_project": "HANGMAN",
+                                                  "added_timestamp": 1765628000,
+                                                  "project_source_type": "DATA_IMPORTER"
+                                                }
+                                                """
+                                ),
                         }
                 )
         )
