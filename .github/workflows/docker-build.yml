@@ -52,7 +52,9 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ghcr.io/SamoylovSt/project-service:${{ steps.vars.outputs.sha_short }}
+            ghcr.io/SamoylovSt/project-service:latest
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
           cache-to: type=gha,mode=min
